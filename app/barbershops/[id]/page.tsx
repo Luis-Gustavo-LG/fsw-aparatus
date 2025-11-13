@@ -8,6 +8,7 @@ import { ChevronLeft } from "lucide-react"
 import ServiceItem from "@/app/_components/service-item"
 import ContactPhoneItem from "@/app/_components/contact-phone-item"
 import Footer from "@/app/_components/footer"
+import { BarbershopSeparatorSpacing, BarbershopSectionTitle, BarbershopSectionSpacing, BarbershopSectionCentralizer } from "@/app/_components/page"
 
 const BarbershopPage = async (props: PageProps<"/barbershops/[id]">) => {
     const { id } = await props.params
@@ -68,57 +69,57 @@ const BarbershopPage = async (props: PageProps<"/barbershops/[id]">) => {
                     </div>
                 </div>
 
-                <div className="px-0 py-6">
+                <BarbershopSeparatorSpacing>
                     <Separator />
-                </div>
+                </BarbershopSeparatorSpacing>
 
                 {/* About Section */}
-                <div className="px-5 py-0 flex flex-col gap-3">
-                    <div className="flex gap-2.5 items-center justify-center">
-                        <p className="font-bold text-xs leading-[1.4] text-foreground uppercase">
+                <BarbershopSectionSpacing>
+                    <BarbershopSectionCentralizer>
+                        <BarbershopSectionTitle>
                             SOBRE NÓS
-                        </p>
-                    </div>
+                        </BarbershopSectionTitle>
+                    </BarbershopSectionCentralizer>
                     <p className="font-normal text-sm leading-[1.4] text-foreground whitespace-pre-wrap">
                         {barbershop.description}
                     </p>
-                </div>
+                </BarbershopSectionSpacing>
 
-                <div className="px-0 py-6">
+                <BarbershopSeparatorSpacing>
                     <Separator />
-                </div>
+                </BarbershopSeparatorSpacing>
 
                 {/* Services Section */}
-                <div className="px-5 py-0 flex flex-col gap-3">
-                    <div className="flex gap-2.5 items-center justify-center">
-                        <p className="font-bold text-xs leading-[1.4] text-foreground uppercase">
+                <BarbershopSectionSpacing>
+                    <BarbershopSectionCentralizer>
+                        <BarbershopSectionTitle>
                             SERVIÇOS
-                        </p>
-                    </div>
+                        </BarbershopSectionTitle>
+                    </BarbershopSectionCentralizer>
                     <div className="flex flex-col gap-3">
                         {barbershop.services.map((service) => (
                             <ServiceItem key={service.id} service={service} />
                         ))}
                     </div>
-                </div>
+                </BarbershopSectionSpacing>
 
-                <div className="px-0 py-6">
+                <BarbershopSeparatorSpacing>
                     <Separator />
-                </div>
+                </BarbershopSeparatorSpacing>
 
                 {/* Contact Section */}
-                <div className="px-5 py-0 flex flex-col gap-3">
-                    <div className="flex gap-2.5 items-center justify-center">
-                        <p className="font-bold text-xs leading-[1.4] text-foreground uppercase">
+                <BarbershopSectionSpacing>
+                    <BarbershopSectionCentralizer>
+                        <BarbershopSectionTitle>
                             CONTATO
-                        </p>
-                    </div>
+                        </BarbershopSectionTitle>
+                    </BarbershopSectionCentralizer>
                     <div className="flex flex-col gap-3">
                         {barbershop.phones.map((phone, index) => (
                             <ContactPhoneItem key={index} phone={phone} />
                         ))}
                     </div>
-                </div>
+                </BarbershopSectionSpacing>
 
                 {/* Footer */}
                 <div className="pt-[60px] pb-0 px-0">
