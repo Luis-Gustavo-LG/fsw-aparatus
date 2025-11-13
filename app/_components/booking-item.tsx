@@ -28,6 +28,7 @@ const BookingItem = ({ serviceName, barbershopName, barbershopImageUrl, date}: B
                     <Avatar className="h-6 w-6">
                         <AvatarImage src={barbershopImageUrl}/>
                     </Avatar>
+                    <p>{barbershopName}</p>
                 </div>
             </div>
         </div>
