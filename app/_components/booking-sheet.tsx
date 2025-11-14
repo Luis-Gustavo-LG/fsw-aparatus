@@ -6,6 +6,9 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "./ui/sheet"
 import { Calendar } from "./ui/calendar"
 import { Button } from "./ui/button"
 import { getBarbershop } from "../actions/get-barbershop"
+import { useAction } from "next-safe-action/hooks"
+import { createBooking } from "../actions/create-booking"
+import { toast } from "sonner"
 
 interface BookingSheetProps {
   service: BarbershopService
@@ -43,6 +46,7 @@ const BookingSheet = ({ service, open, onOpenChange }: BookingSheetProps) => {
   const [selectedTime, setSelectedTime] = useState<string | undefined>(undefined)
   const [barbershop, setBarbershop] = useState<Barbershop | null>(null)
   const [loading, setLoading] = useState(false)
+  const { executeAsync, isPending} = useAction(createBooking)
 
   const timeSlots = generateTimeSlots()
 
@@ -83,15 +87,26 @@ const BookingSheet = ({ service, open, onOpenChange }: BookingSheetProps) => {
   }, [selectedDate])
 
 
-  const handleConfirm = () => {
-    if (selectedDate && selectedTime) {
-      console.log("Confirmar reserva:", {
-        serviceId: service.id,
-        date: selectedDate,
-        time: selectedTime,
-      })
-    }
-  }
+  const handleConfirm = async () => {
+    if (!selectedDate || !selectedTime) return
+      const timeSplitted = selectedTime.split(":")
+      const hours = parseInt(timeSplitted[0])
+      const minutes = parseInt(timeSplitted[1])
+      const date = new Date(selectedDate)
+      date.setHours(hours, minutes)
+        const result = await executeAsync({
+          serviceId: service.id,
+          date,
+        })
+        if(result.serverError || result.validationErrors) {
+          toast.error(result.validationErrors?._errors?.[0])
+          return
+        } 
+        toast.success("Agendamento criado com sucesso")
+        setSelectedDate(undefined)
+        setSelectedTime(undefined)
+        onOpenChange(false)
+      }
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -188,10 +203,10 @@ const BookingSheet = ({ service, open, onOpenChange }: BookingSheetProps) => {
           <Button
             variant="default"
             className="w-full rounded-full"
-            disabled={!selectedDate || !selectedTime}
+            disabled={!selectedDate || !selectedTime || isPending}
             onClick={handleConfirm}
           >
-            Confirmar
+            {isPending ? "Criando agendamento..." : "Confirmar"}
           </Button>
         </div>
       </SheetContent>

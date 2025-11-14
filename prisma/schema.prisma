@@ -38,6 +38,8 @@ model Booking {
   id           String    @id @default(uuid())
   serviceId    String
   barberShopId String
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   date         DateTime  @db.Timestamptz
   cancelled    Boolean?  @default(false)
   cancelledAt  DateTime? @db.Timestamptz
@@ -51,6 +53,7 @@ model User {
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @default(now()) @updatedAt
+  bookings      Booking[]
   sessions      Session[]
   accounts      Account[]
 
