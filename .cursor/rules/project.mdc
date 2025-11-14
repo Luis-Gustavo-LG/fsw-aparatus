@@ -14,6 +14,7 @@ Tecnologias utilizadas:
 - Prisma
 - shadcn/ui
 - Tailwindcss
+- Better-auth para autenticação
 
 <!-- Regras -->
 
@@ -21,6 +22,7 @@ Tecnologias utilizadas:
 - SEMPRE use componentes em que estão em @page.tsx 
 - NUNCA use cores hard-coded do Tailwind, APENAS cores do tema que estão em @globals.css 
 - USE a página que está em @page.tsx como referência para organizar o código
+- Ao usar Figma MCP, **SEMPRE** seja 100% fiel ao Figma **CUSTE O QUE CUSTAR**
 - **SEMPRE** use o MCP do Context7 para buscar documentações, sites e APIs
 - **SEMPRE** use os componentes @app\_components\footer.tsx e @app\_components\header.tsx na hora de criar headers e footers. **NUNCA** os crie manualmente
 - Evite ao máximo duplicidade de código. Ao repetir um código, crie componentes e/ou funções utilitárias
