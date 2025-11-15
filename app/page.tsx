@@ -7,8 +7,14 @@ import { prisma } from "@/lib/prisma";
 import BarbershopItem from "./_components/barbershop-item";
 import Footer from "./_components/footer";
 import { PageContainer, PageSection, PageSectionScroller, PageSectionTitle } from "./_components/page";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 const Home = async () => {
+
+  const session = await auth.api.getSession({
+    headers: await headers()
+  })
 
   const recommendedBarbershops = await prisma.barbershop.findMany({
     orderBy: {
@@ -19,6 +25,17 @@ const Home = async () => {
   const popularBarbershops = await prisma.barbershop.findMany({
     orderBy: {
       name: "desc"
+    }
+  })
+
+  const booking = await prisma.booking.findFirst({
+    include: {
+      service: true,
+      barbershop: true
+    },
+    where: {
+      cancelled: false,
+      userId: session?.user.id
     }
   })
 
@@ -34,14 +51,20 @@ const Home = async () => {
           className="w-full h-auto"
         />
 
-        <PageSection>
-        <PageSectionTitle>Agendamentos</PageSectionTitle>
-        <BookingItem
-          serviceName="Degrade"
-          barbershopName="Barbearia do João"
-          barbershopImageUrl="https://utfs.io/f/c97a2dc9-cf62-468b-a851-bfd2bdde775f-16p.png"
-          date={new Date()}
+        <PageSection> 
+        {session?.user && booking && (
+          <>
+          <PageSectionTitle>Agendamentos</PageSectionTitle>
+          <BookingItem
+          serviceName={booking?.service.name}
+          barbershopName={booking?.barbershop.name}
+          barbershopImageUrl={booking?.barbershop.imageUrl}
+          date={booking?.date}
+          status="confirmed"
         />
+          </>
+        )}
+        
         </PageSection>
 
         <PageSection>

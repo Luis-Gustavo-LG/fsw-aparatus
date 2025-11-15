@@ -9,6 +9,8 @@ import ServiceItem from "@/app/_components/service-item"
 import ContactPhoneItem from "@/app/_components/contact-phone-item"
 import Footer from "@/app/_components/footer"
 import { BarbershopSeparatorSpacing, BarbershopSectionTitle, BarbershopSectionSpacing, BarbershopSectionCentralizer } from "@/app/_components/page"
+import { auth } from "@/lib/auth"
+import { headers } from "next/headers"
 
 const BarbershopPage = async (props: PageProps<"/barbershops/[id]">) => {
     const { id } = await props.params

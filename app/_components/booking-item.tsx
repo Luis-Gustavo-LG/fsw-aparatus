@@ -5,19 +5,20 @@ import { Avatar } from "./ui/avatar";
 import { AvatarImage } from "@radix-ui/react-avatar";
 
 interface BookingInterface {
-  serviceName: string;
-  barbershopName: string;
-  barbershopImageUrl: string;
-  date: Date;
+  serviceName: string | undefined;
+  barbershopName: string | undefined;
+  barbershopImageUrl: string | undefined;
+  date: Date | undefined;
+  status: 'confirmed' | 'inactive'
 }
 
-const BookingItem = ({ serviceName, barbershopName, barbershopImageUrl, date}: BookingInterface) => {
+const BookingItem = ({ serviceName, barbershopName, barbershopImageUrl, date, status}: BookingInterface) => {
   return (
     <Card className="flex w-full min-w-full flex-row items-center justify-between p-0">
         {/*Esquerda*/}
         <div className="flex flex-col gap-4 flex-1 p-6">
-            <Badge>
-                Confirmado
+            <Badge className={status == "confirmed" ? 'bg-primary' : "bg-muted"}>
+                {status == 'confirmed' ? 'Confirmado' : 'Cancelado'}
             </Badge>
 
             <div className="flex flex-col gap-2">
@@ -34,14 +35,14 @@ const BookingItem = ({ serviceName, barbershopName, barbershopImageUrl, date}: B
         </div>
         {/*Direita*/}
         <div className="flex flex-col items-center justify-center p-4 h-full border-l py-3">
-            <p className="text-xs capitalize">
-                {date.toLocaleDateString('pt-BR', { month: "long"} )}
+            <p className="text-2xs capitalize">
+                {date?.toLocaleDateString('pt-BR', { month: "long"} )}
             </p>
-            <p>
-                {date.toLocaleDateString('pt-BR', { day: "2-digit"} )}
+            <p className="text-3xl">
+                {date?.toLocaleDateString('pt-BR', { day: "2-digit"} )}
             </p>
-            <p className="text-xs capitalize">
-                {date.toLocaleTimeString('pt-BR', { hour: "2-digit", minute: "2-digit"} )}
+            <p className="text-2xs capitalize">
+                {date?.toLocaleTimeString('pt-BR', { hour: "2-digit", minute: "2-digit"} )}
             </p>
         </div>
     </Card>

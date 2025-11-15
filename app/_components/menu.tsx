@@ -24,6 +24,8 @@ const Menu = ({ children }: MenuProps) => {
 
   const handleLogout = async () => {
     await authClient.signOut();
+    router.refresh()
+    router.push("/")
   };
 
   const handleNavigation = (path: string) => {

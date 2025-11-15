@@ -5,6 +5,8 @@ import Image from "next/image"
 import { Button } from "./ui/button"
 import { BarbershopService } from "../generated/prisma/client"
 import BookingSheet from "./booking-sheet"
+import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner"
 
 interface ServiceItemProps {
   service: BarbershopService
@@ -20,6 +22,7 @@ const formatPrice = (priceInCents: number) => {
 
 const ServiceItem = ({ service }: ServiceItemProps) => {
   const [open, setOpen] = useState(false)
+  const { data: session } = authClient.useSession()
 
   return (
     <>
@@ -49,7 +52,7 @@ const ServiceItem = ({ service }: ServiceItemProps) => {
               variant="default"
               size="sm"
               className="rounded-full px-4 py-2"
-              onClick={() => setOpen(true)}
+              onClick={() => session ? setOpen(true) : toast.error("Faça login para reservar.")}
             >
               Reservar
             </Button>
