@@ -9,6 +9,10 @@ import { getBarbershop } from "../actions/get-barbershop"
 import { useAction } from "next-safe-action/hooks"
 import { createBooking } from "../actions/create-booking"
 import { toast } from "sonner"
+import { ptBR } from "date-fns/locale"
+import { useQuery } from "@tanstack/react-query"
+import { getDateAvailableTimeSlots } from "../actions/get-date-available-time-slots"
+import { Spinner } from "./ui/spinner"
 
 interface BookingSheetProps {
   service: BarbershopService
@@ -47,6 +51,18 @@ const BookingSheet = ({ service, open, onOpenChange }: BookingSheetProps) => {
   const [barbershop, setBarbershop] = useState<Barbershop | null>(null)
   const [loading, setLoading] = useState(false)
   const { executeAsync, isPending} = useAction(createBooking)
+  const {data: availableTimeSlot, isPending: isTimeSlotPending} = useQuery({
+    queryKey: ['date-available-time-slot', service.barberShopId, selectedDate],
+    queryFn: () => getDateAvailableTimeSlots({
+      barberShopId: service.barberShopId,
+      date: selectedDate!
+    }),
+    enabled: !!selectedDate
+  })
+
+  const handleDateSelect = (date: Date | undefined) => {
+    setSelectedDate(date)
+  }
 
   const timeSlots = generateTimeSlots()
 
@@ -122,30 +138,23 @@ const BookingSheet = ({ service, open, onOpenChange }: BookingSheetProps) => {
             <Calendar
               mode="single"
               selected={selectedDate}
-              onSelect={setSelectedDate}
+              onSelect={handleDateSelect}
               disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
               className="rounded-md w-full"
-              formatters={{
-                formatCaption: (date: Date) => {
-                  const months = [
-                    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-                    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
-                  ]
-                  return months[date.getMonth()]
-                },
-                formatWeekdayName: (date) => {
-                  const weekdays = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"]
-                  return weekdays[date.getDay()]
-                },
-              }}
+              locale={ptBR}
             />
           </div>
 
           {/* Time Slots */}
           {selectedDate && (
+            isTimeSlotPending ? (
+            <div className="flex items-center justify-center p-4 h-fit">
+              <Spinner className="size-15"/>
+            </div>
+            ) : (
             <div className="flex flex-col gap-3">
               <div className="flex gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden pb-2 -mx-1 px-1">
-                {timeSlots.map((time) => (
+                {availableTimeSlot?.data?.map((time) => (
                   <Button
                     key={time}
                     variant={selectedTime === time ? "default" : "outline"}
@@ -158,6 +167,7 @@ const BookingSheet = ({ service, open, onOpenChange }: BookingSheetProps) => {
                 ))}
               </div>
             </div>
+            )
           )}
 
           {/* Summary */}
