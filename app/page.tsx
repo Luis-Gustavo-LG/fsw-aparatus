@@ -56,6 +56,7 @@ const Home = async () => {
           <>
           <PageSectionTitle>Agendamentos</PageSectionTitle>
           <BookingItem
+          bookingId={booking?.id}
           serviceName={booking?.service.name}
           barbershopName={booking?.barbershop.name}
           barbershopImageUrl={booking?.barbershop.imageUrl}

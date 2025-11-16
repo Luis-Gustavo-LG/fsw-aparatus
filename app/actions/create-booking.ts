@@ -46,6 +46,10 @@ const inputSchema = z.object({
             barberShopId: service.barberShopId
         }
     })
+
+    revalidatePath("/bookings")
+    revalidatePath("/")
+
     return booking;
   }
   );

@@ -34,17 +34,6 @@ const formatDate = (date: Date): string => {
   return `${day} de ${month.charAt(0).toUpperCase() + month.slice(1)}`
 }
 
-const generateTimeSlots = (): string[] => {
-  const slots: string[] = []
-  for (let hour = 9; hour <= 18; hour++) {
-    slots.push(`${hour.toString().padStart(2, "0")}:00`)
-    if (hour < 18) {
-      slots.push(`${hour.toString().padStart(2, "0")}:30`)
-    }
-  }
-  return slots
-}
-
 const BookingSheet = ({ service, open, onOpenChange }: BookingSheetProps) => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
   const [selectedTime, setSelectedTime] = useState<string | undefined>(undefined)
@@ -63,8 +52,6 @@ const BookingSheet = ({ service, open, onOpenChange }: BookingSheetProps) => {
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date)
   }
-
-  const timeSlots = generateTimeSlots()
 
   useEffect(() => {
     if (!open || !service.barberShopId) return
