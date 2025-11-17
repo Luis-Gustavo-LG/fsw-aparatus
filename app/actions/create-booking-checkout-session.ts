@@ -7,7 +7,7 @@ import { returnValidationErrors } from "next-safe-action";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import Stripe from "stripe";
-import { format, hoursToMinutes } from "date-fns";
+import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 const inputSchema = z.object({
@@ -61,6 +61,7 @@ export const createBookingCheckoutSession = actionClient
         userId: session.user.id,
         serviceId,
         date: date.toISOString(),
+        barberShopId: service.barberShopId
       },
 
       line_items: [
