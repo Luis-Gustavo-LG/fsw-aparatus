@@ -19,7 +19,7 @@ export const getBookingInfo = actionClient
             headers: await headers()
         })
         if (!session) {
-            returnValidationErrors(inputSchema, { _errors: ["Não autorizado"] });
+            return returnValidationErrors(inputSchema, { _errors: ["Não autorizado"] });
         }
 
     const booking = await prisma.booking.findUnique({
@@ -33,11 +33,11 @@ export const getBookingInfo = actionClient
     })
 
     if (!booking) {
-        returnValidationErrors(inputSchema, { _errors: ["Agendamento não encontrado"] })
+        return returnValidationErrors(inputSchema, { _errors: ["Agendamento não encontrado"] })
       }
   
       if (booking.userId !== session.user.id) {
-        returnValidationErrors(inputSchema, { _errors: ["Acesso negado"] })
+        return returnValidationErrors(inputSchema, { _errors: ["Acesso negado"] })
       }
   
       return {

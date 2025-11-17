@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { returnValidationErrors } from "next-safe-action";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { revalidatePath } from "next/cache";
 
 const inputSchema = z.object({
     serviceId: z.uuid(),
@@ -18,7 +19,7 @@ const inputSchema = z.object({
         headers: await headers()
     })
     if (!session) {
-        returnValidationErrors(inputSchema, { _errors: ["Não autorizado"] });
+        return returnValidationErrors(inputSchema, { _errors: ["Não autorizado"] });
     }
     const service = await prisma.barbershopService.findUnique({
         where: {
@@ -26,7 +27,7 @@ const inputSchema = z.object({
         },
     })
     if (!service) {
-        returnValidationErrors(inputSchema, { _errors: ["Serviço não encontrado"] });
+        return returnValidationErrors(inputSchema, { _errors: ["Serviço não encontrado"] });
     }
     const existingBooking = await prisma.booking.findFirst({
         where: {
@@ -36,7 +37,7 @@ const inputSchema = z.object({
     })
     if (existingBooking) {
         console.error("Booking already exists");
-        returnValidationErrors(inputSchema, { _errors: ["Agendamento já existe nessa data e hora"] });
+        return returnValidationErrors(inputSchema, { _errors: ["Agendamento já existe nessa data e hora"] });
     }
     const booking = await prisma.booking.create({
         data: {

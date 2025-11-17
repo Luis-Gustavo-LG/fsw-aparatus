@@ -13,6 +13,8 @@ import { ptBR } from "date-fns/locale"
 import { useQuery } from "@tanstack/react-query"
 import { getDateAvailableTimeSlots } from "../actions/get-date-available-time-slots"
 import { Spinner } from "./ui/spinner"
+import { createBookingCheckoutSession } from "../actions/create-booking-checkout-session"
+import { loadStripe } from '@stripe/stripe-js'
 
 interface BookingSheetProps {
   service: BarbershopService
@@ -35,6 +37,7 @@ const formatDate = (date: Date): string => {
 }
 
 const BookingSheet = ({ service, open, onOpenChange }: BookingSheetProps) => {
+  const { executeAsync: executeCreateBookingCheckoutSession } = useAction(createBookingCheckoutSession)
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
   const [selectedTime, setSelectedTime] = useState<string | undefined>(undefined)
   const [barbershop, setBarbershop] = useState<Barbershop | null>(null)
@@ -91,7 +94,42 @@ const BookingSheet = ({ service, open, onOpenChange }: BookingSheetProps) => {
 
 
   const handleConfirm = async () => {
-    if (!selectedDate || !selectedTime) return
+
+    if(!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY){
+      toast.error("Erro ao criar checkout session")
+      return
+    }
+
+    if(!selectedDate || !selectedTime){
+      toast.error("Selecione uma data")
+      return
+    }
+
+    const timeSplitted = selectedTime.split(":")
+      const hours = parseInt(timeSplitted[0])
+      const minutes = parseInt(timeSplitted[1])
+      const date = new Date(selectedDate)
+      date.setHours(hours, minutes)
+
+    const checkoutSessionResult = await executeCreateBookingCheckoutSession({
+      serviceId: service.id,
+      date: date
+    })
+    if(checkoutSessionResult.serverError || checkoutSessionResult.validationErrors){
+      toast.error(checkoutSessionResult.validationErrors?._errors?.[0])
+      return
+    }
+
+    const checkoutUrl = checkoutSessionResult.data?.url;
+
+    if (!checkoutUrl) {
+    toast.error("Erro ao criar checkout session");
+    return;
+    }
+
+    window.location.href = checkoutUrl;
+
+    /*if (!selectedDate || !selectedTime) return
       const timeSplitted = selectedTime.split(":")
       const hours = parseInt(timeSplitted[0])
       const minutes = parseInt(timeSplitted[1])
@@ -108,7 +146,7 @@ const BookingSheet = ({ service, open, onOpenChange }: BookingSheetProps) => {
         toast.success("Agendamento criado com sucesso")
         setSelectedDate(undefined)
         setSelectedTime(undefined)
-        onOpenChange(false)
+        onOpenChange(false)*/
       }
 
   return (
