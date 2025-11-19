@@ -24,7 +24,7 @@ const BookingItem = ({
     bookingId
   }: BookingInterface) => {
     return (
-      <BookingInfo bookingId={bookingId} status={status}>
+      <BookingInfo bookingId={bookingId}>
         <SheetTrigger asChild>
           <Card className="flex w-full flex-row items-center justify-between p-0 cursor-pointer">
   

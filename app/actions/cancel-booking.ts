@@ -1,61 +1,45 @@
 "use server";
 
-import { actionClient } from "@/lib/action-client";
-import { auth } from "@/lib/auth";
+import Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
-import { returnValidationErrors } from "next-safe-action";
+import { actionClient } from "@/lib/action-client";
+import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { headers } from "next/headers";
-import z from "zod";
 
 const inputSchema = z.object({
-    bookingId: z.uuid()
-})
+  bookingId: z.string().uuid(),
+});
 
 export const cancelBooking = actionClient
-    .inputSchema(inputSchema)
-    .action(async( { parsedInput: { bookingId }} ) => {
+  .inputSchema(inputSchema)
+  .action(async ({ parsedInput: { bookingId } }) => {
 
-        const session = await auth.api.getSession({
-            headers: await headers()
-        })
-        if (!session) {
-            return 
-            returnValidationErrors(inputSchema, { _errors: ["Não autorizado"] });
-        }
+    if (!process.env.STRIPE_SECRET_KEY) {
+      throw new Error("STRIPE_SECRET_KEY is missing");
+    }
 
     const booking = await prisma.booking.findUnique({
-        where: {
-            id: bookingId
-        }
-    })
+      where: { id: bookingId }
+    });
 
-    if(!booking){
-        return
-        returnValidationErrors(inputSchema, {_errors: ["Agendamento não encontrado"]})
+    if (!booking) {
+      throw new Error("Booking not found");
     }
 
-    if(booking.userId !== session?.user.id){
-        return
-        returnValidationErrors(inputSchema, {_errors: ["Agendamento não pertence ao usuário logado"]})
+    if (!booking.paymentIntentId) {
+      throw new Error("This booking has no payment intent. Cannot refund.");
     }
 
-    if(booking.cancelled){
-        return
-        returnValidationErrors(inputSchema, {_errors: ["Agendamento já está cancelado"]})
-    }
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: "2025-10-29.clover",
+    });
 
-    await prisma.booking.update({
-        where: {
-            id: bookingId
-        },
-        data: {
-            cancelled: true,
-            cancelledAt: new Date()
-        }
-    })
+    await stripe.refunds.create({
+      payment_intent: booking.paymentIntentId,
+    });
+
     revalidatePath("/bookings")
     revalidatePath("/")
 
-    return { success: true }
-})
+    return { success: true };
+  });

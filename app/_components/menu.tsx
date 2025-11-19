@@ -44,7 +44,7 @@ const Menu = ({ children }: MenuProps) => {
   return (
     <Sheet>
       {children}
-      <SheetContent side="right" className="w-[450px] p-0">
+      <SheetContent side="right" className="w-[350px] p-0">
         <div className="flex flex-col h-full">
           <SheetHeader className="px-5 py-6 flex flex-row items-center justify-between">
             <SheetTitle className="text-lg font-bold">Menu</SheetTitle>

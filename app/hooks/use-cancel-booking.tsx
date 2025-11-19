@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 
 export function useCancelBooking() {
   const queryClient = useQueryClient();
-  const router = useRouter()
 
   return useMutation({
     mutationFn: async (bookingId: string) => {
@@ -19,7 +18,7 @@ export function useCancelBooking() {
     },
     onSuccess: () => {
       toast.success("Agendamento cancelado!");
-      queryClient.invalidateQueries({ queryKey: ["bookings"] });
+      window.location.reload();
     },
     onError: (error) => {
       toast.error(error.message);

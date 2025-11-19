@@ -128,30 +128,11 @@ const BookingSheet = ({ service, open, onOpenChange }: BookingSheetProps) => {
     }
 
     window.location.href = checkoutUrl;
-
-    /*if (!selectedDate || !selectedTime) return
-      const timeSplitted = selectedTime.split(":")
-      const hours = parseInt(timeSplitted[0])
-      const minutes = parseInt(timeSplitted[1])
-      const date = new Date(selectedDate)
-      date.setHours(hours, minutes)
-        const result = await executeAsync({
-          serviceId: service.id,
-          date,
-        })
-        if(result.serverError || result.validationErrors) {
-          toast.error(result.validationErrors?._errors?.[0])
-          return
-        } 
-        toast.success("Agendamento criado com sucesso")
-        setSelectedDate(undefined)
-        setSelectedTime(undefined)
-        onOpenChange(false)*/
       }
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-[450px] p-5 rounded-t-xl flex flex-col">
+      <SheetContent side="right" className="w-[350px] p-5 rounded-t-xl flex flex-col">
         <SheetHeader className="px-0">
           <SheetTitle className="text-left text-lg font-semibold">Fazer Reserva</SheetTitle>
         </SheetHeader>
