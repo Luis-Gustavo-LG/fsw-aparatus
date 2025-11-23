@@ -32,14 +32,25 @@ const Menu = ({ children }: MenuProps) => {
     router.push(path);
   };
 
-  const categories = [
-    "Cabelo",
-    "Barba",
-    "Acabamento",
-    "Sombrancelha",
-    "Massagem",
-    "Hidratação",
-  ];
+  const categories = [{
+    name: "Cabelo",
+    path: "/search?query=Cabelo"
+  }, {
+    name: "Barba",
+    path: "/search?query=Barba"
+  }, {
+    name: "Acabamento",
+    path: "/search?query=Acabamento"
+  }, {
+    name: "Sombrancelha",
+    path: "/search?query=Sombrancelha"
+  }, {
+    name: "Massagem",
+    path: "/search?query=Massagem"
+  }, {
+    name: "Hidratação",
+    path: "/search?query=Hidratação"
+  }]
 
   return (
     <Sheet>
@@ -102,12 +113,12 @@ const Menu = ({ children }: MenuProps) => {
                 <div className="flex flex-col gap-1">
                   {categories.map((category) => (
                     <Button
-                      key={category}
+                      key={category.name}
+                      onClick={() => handleNavigation(category.path)}
                       variant="ghost"
                       className="justify-start h-10 px-5 rounded-full"
-                      disabled
                     >
-                      <span className="text-sm font-medium">{category}</span>
+                        <span className="text-sm font-medium">{category.name}</span>
                     </Button>
                   ))}
                 </div>

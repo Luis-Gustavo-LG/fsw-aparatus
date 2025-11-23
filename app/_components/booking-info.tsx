@@ -1,6 +1,6 @@
 "use client";
 
-import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle } from "./ui/sheet";
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "./ui/sheet";
 import { Button } from "./ui/button";
 import { useBooking } from "../hooks/use-booking";
 import { format, isAfter } from "date-fns";
@@ -55,6 +55,7 @@ const BookingInfo = ({ children, bookingId }: BookingProps) => {
       <SheetContent side="right" className="w-[450px]">
         <SheetHeader>
           <SheetTitle>Informações da Reserva</SheetTitle>
+          <SheetDescription>Detalhes do agendamento</SheetDescription>
         </SheetHeader>
 
         <div className="flex flex-1 flex-col p-5 space-y-5">

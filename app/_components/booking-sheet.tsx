@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { BarbershopService, Barbershop } from "../generated/prisma/client"
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "./ui/sheet"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "./ui/sheet"
 import { Calendar } from "./ui/calendar"
 import { Button } from "./ui/button"
 import { getBarbershop } from "../actions/get-barbershop"
@@ -135,6 +135,7 @@ const BookingSheet = ({ service, open, onOpenChange }: BookingSheetProps) => {
       <SheetContent side="right" className="w-[350px] p-5 rounded-t-xl flex flex-col">
         <SheetHeader className="px-0">
           <SheetTitle className="text-left text-lg font-semibold">Fazer Reserva</SheetTitle>
+          <SheetDescription className="text-left text-xs">Selecione uma data e um horário para fazer sua reserva</SheetDescription>
         </SheetHeader>
 
         <div className="flex flex-col gap-6 mt-4 flex-1 overflow-y-auto overflow-x-hidden">
