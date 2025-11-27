@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { House, CalendarDays, LogOut } from "lucide-react";
+import { House, CalendarDays, LogOut, MessageSquareMore } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import {
   Sheet,
@@ -52,6 +52,24 @@ const Menu = ({ children }: MenuProps) => {
     path: "/search?query=Hidratação"
   }]
 
+  const menuItems = [
+    {
+      name: "Início",
+      path: "/",
+      icon: House
+    },
+    {
+      name: "Agendamentos",
+      path: "/bookings",
+      icon: CalendarDays
+    },
+    {
+      name: "Chat",
+      path: "/chat",
+      icon: MessageSquareMore
+    }
+  ]
+
   return (
     <Sheet>
       {children}
@@ -86,26 +104,18 @@ const Menu = ({ children }: MenuProps) => {
                 </div>
 
                 <div className="flex flex-col gap-0">
-                  <SheetClose asChild>
-                    <Button
-                      variant="ghost"
-                      className="justify-start gap-3 h-auto py-3 px-5 rounded-full"
-                      onClick={() => handleNavigation("/")}
-                    >
-                      <House className="size-4" />
-                      <span className="text-sm font-medium">Início</span>
-                    </Button>
-                  </SheetClose>
-                  <SheetClose asChild>
-                    <Button
-                      variant="ghost"
-                      className="justify-start gap-3 h-auto py-3 px-5 rounded-full"
-                      onClick={() => handleNavigation("/bookings")}
-                    >
-                      <CalendarDays className="size-4" />
-                      <span className="text-sm font-medium">Agendamentos</span>
-                    </Button>
-                  </SheetClose>
+                  {menuItems.map((item) => (
+                    <SheetClose asChild key={item.name}>
+                      <Button
+                        variant="ghost"
+                        className="justify-start gap-3 h-auto py-3 px-5 rounded-full"
+                        onClick={() => handleNavigation(item.path)}
+                      >
+                        <item.icon className="size-4" />
+                        <span className="text-sm font-medium">{item.name}</span>
+                      </Button>
+                    </SheetClose>
+                  ))}
                 </div>
 
                 <Separator />
