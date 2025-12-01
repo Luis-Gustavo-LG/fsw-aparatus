@@ -90,13 +90,6 @@ export default function ChatPage() {
                     />
                     <div className="absolute right-2 flex items-center gap-1">
                         <Button 
-                            size="icon" 
-                            variant="ghost" 
-                            className="rounded-full text-muted-foreground hover:bg-transparent"
-                        >
-                            <Mic className="h-5 w-5" />
-                        </Button>
-                        <Button 
                             onClick={handleSend}
                             size="icon" 
                             className="rounded-full h-8 w-8 bg-primary hover:bg-primary/90 text-primary-foreground"

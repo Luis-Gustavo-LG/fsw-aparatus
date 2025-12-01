@@ -41,7 +41,6 @@ const BookingInfo = ({ children, bookingId }: BookingProps) => {
   if (error) return <div className="p-6 text-red-500">{String(error)}</div>;
   if (!booking) return <div className="p-6">Agendamento não encontrado.</div>;
 
-  // --- Agora o status vem do backend ---
   const bookingStatus = booking.cancelled ? "inactive" : "confirmed";
 
   const handleDelete = () => cancelBooking(bookingId);
@@ -59,8 +58,6 @@ const BookingInfo = ({ children, bookingId }: BookingProps) => {
         </SheetHeader>
 
         <div className="flex flex-1 flex-col p-5 space-y-5">
-          
-          {/* MAPA + BARBEARIA */}
           <div className="relative rounded-xl min-w-[400px] min-h-[200px]">
             <Image
               fill
@@ -81,7 +78,6 @@ const BookingInfo = ({ children, bookingId }: BookingProps) => {
             </div>
           </div>
 
-          {/* STATUS */}
           <p
             className={`${
               bookingStatus === "confirmed"
@@ -92,7 +88,6 @@ const BookingInfo = ({ children, bookingId }: BookingProps) => {
             {bookingStatus === "confirmed" ? "Confirmado" : "Cancelado"}
           </p>
 
-          {/* BOX DE INFORMAÇÕES */}
           <div className="p-4 bg-card border border-border rounded-lg">
             <div className="flex justify-between w-full">
               <div className="flex flex-col items-start gap-3">
@@ -123,7 +118,6 @@ const BookingInfo = ({ children, bookingId }: BookingProps) => {
             </div>
           </div>
 
-          {/* CONTATO */}
           <BarbershopSectionSpacing>
             <BarbershopSectionCentralizer>
               <BarbershopSectionTitle>CONTATO</BarbershopSectionTitle>
@@ -137,14 +131,11 @@ const BookingInfo = ({ children, bookingId }: BookingProps) => {
           </BarbershopSectionSpacing>
         </div>
 
-        {/* BOTÕES */}
         <div className="flex gap-3 items-center justify-center p-4">
-          {/* VOLTAR */}
           <SheetClose className="w-[50%] h-10 rounded-2xl bg-primary text-background hover:bg-muted hover:text-card-foreground hover:border">
             Voltar
           </SheetClose>
 
-          {/* AÇÕES BASEADAS NO STATUS */}
           {bookingStatus === "confirmed" ? (
             <Button
               className="w-[50%] h-10 rounded-2xl bg-destructive hover:bg-card-foreground"

@@ -37,7 +37,7 @@ export const ChatMessage = ({
     return (
       <div className="flex w-full flex-col items-end gap-3 pt-6 pr-5 pb-0 pl-10">
         <div className="bg-secondary flex max-w-[calc(100%-40px)] items-center gap-2.5 rounded-full px-4 py-3">
-          <p className="text-foreground truncate text-sm leading-[1.4] font-normal break-words whitespace-normal">
+          <p className="text-foreground truncate text-sm leading-[1.4] font-normal wrap-break-words whitespace-normal">
             {content}
           </p>
         </div>
@@ -51,7 +51,7 @@ export const ChatMessage = ({
         <div className="border-border flex size-8 shrink-0 items-center justify-center rounded-full border bg-[rgba(48,92,58,0.12)]">
           <Bot className="text-primary size-3.5" />
         </div>
-        <div className="text-foreground max-w-full text-sm leading-[1.4] font-normal break-words whitespace-normal">
+        <div className="text-foreground max-w-full text-sm leading-[1.4] font-normal wrap-break-words whitespace-normal">
           <Streamdown>{content}</Streamdown>
         </div>
       </div>

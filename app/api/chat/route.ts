@@ -3,7 +3,7 @@ import { google } from "@ai-sdk/google";
 import z from "zod";
 import { prisma } from "@/lib/prisma";
 import { getDateAvailableTimeSlots } from "@/app/actions/get-date-available-time-slots";
-import { createBooking } from "@/app/actions/create-booking";
+import { createBookingCheckoutSession } from "@/app/actions/create-booking-checkout-session";
 
 export const POST = async (request: Request) => {
   const { messages } = await request.json();
@@ -54,11 +54,11 @@ export const POST = async (request: Request) => {
     - Preço
 
     Criação da reserva:
-    - Após o usuário confirmar explicitamente a escolha (ex: "confirmo", "pode agendar", "quero esse horário"), use a ferramenta createBooking
+    - Após o usuário confirmar explicitamente a escolha (ex: "confirmo", "pode agendar", "quero esse horário"), use a ferramenta createBookingCheckoutSession
     - Parâmetros necessários:
       * serviceId: ID do serviço escolhido
       * date: Data e horário no formato ISO (YYYY-MM-DDTHH:mm:ss) - exemplo: "2025-11-05T10:00:00"
-    - Se a criação for bem-sucedida (success: true), informe ao usuário que a reserva foi confirmada com sucesso
+    - Se a criação for bem-sucedida (success: true), direcione o usuário para o link de pagamento
     - Se houver erro (success: false), explique o erro ao usuário:
       * Se o erro for "User must be logged in", informe que é necessário fazer login para criar uma reserva
       * Para outros erros, informe que houve um problema e peça para tentar novamente
@@ -149,34 +149,50 @@ export const POST = async (request: Request) => {
           };
         },
       }),
-      createBooking: tool({
-        description:
-          "Cria um agendamento para um serviço em uma data específica.",
-        inputSchema: z.object({
-          serviceId: z.string().describe("ID do serviço"),
-          date: z
-            .string()
-            .describe("Data em ISO String para a qual deseja agendar"),
-        }),
-        execute: async ({ serviceId, date }) => {
-          const parsedDate = new Date(date);
-          const result = await createBooking({
-            serviceId,
-            date: parsedDate,
-          });
-          if (result.serverError || result.validationErrors) {
-            return {
-              error:
-                result.validationErrors?._errors?.[0] ||
-                "Erro ao criar agendamento",
-            };
-          }
-          return {
-            success: true,
-            message: "Agendamento criado com sucesso",
-          };
-        },
-      }),
+      createBookingCheckoutSession: tool({
+  description:
+    "Cria uma checkout session no Stripe para realizar o pagamento do agendamento.",
+  inputSchema: z.object({
+    serviceId: z.string(),
+    date: z.string(),
+  }),
+  execute: async ({ serviceId, date }) => {
+    const parsedDate = new Date(date);
+
+    const result = await createBookingCheckoutSession({
+      serviceId,
+      date: parsedDate,
+    });
+
+    if ("validationErrors" in result) {
+      return {
+        error:
+          result.validationErrors?._errors?.[0] ||
+          "Erro de validação ao criar sessão de pagamento",
+      };
+    }
+
+    if ("serverError" in result) {
+      return {
+        error: result.serverError || "Erro interno ao criar sessão de pagamento",
+      };
+    }
+
+    if (result?.data?.success) {
+      return {
+        text: `Tudo certo! 🎉  
+Para concluir seu agendamento, finalize o pagamento aqui:
+
+👉 [Finalizar pagamento](${result.data.url})`,
+      };
+    }
+
+    return {
+      error: result?.data?.error || "Erro desconhecido ao criar sessão",
+    };
+  },
+})
+
     },
   });
   return result.toUIMessageStreamResponse();
