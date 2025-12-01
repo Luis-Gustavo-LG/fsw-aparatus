@@ -1,7 +1,8 @@
+"use client"
+
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { cancelBooking } from "../actions/cancel-booking";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 
 export function useCancelBooking() {
   const queryClient = useQueryClient();

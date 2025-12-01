@@ -1,7 +1,7 @@
 "use server"
 
 import { prisma } from "@/lib/prisma"
-import { Barbershop } from "../generated/prisma/client"
+import { Barbershop } from "@prisma/client"
 
 export async function getBarbershop(
   barberShopId: string

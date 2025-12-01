@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { BarbershopService, Barbershop } from "../generated/prisma/client"
+import { BarbershopService, Barbershop } from "@prisma/client"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "./ui/sheet"
 import { Calendar } from "./ui/calendar"
 import { Button } from "./ui/button"

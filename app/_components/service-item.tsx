@@ -3,10 +3,10 @@
 import { useState } from "react"
 import Image from "next/image"
 import { Button } from "./ui/button"
-import { BarbershopService } from "../generated/prisma/client"
+import { BarbershopService } from "@prisma/client"
 import BookingSheet from "./booking-sheet"
 import { authClient } from "@/lib/auth-client";
-import { toast } from "sonner"
+import { toast } from "sonner"  
 
 interface ServiceItemProps {
   service: BarbershopService
