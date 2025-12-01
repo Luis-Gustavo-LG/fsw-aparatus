@@ -1,5 +1,5 @@
 import { config } from "dotenv";
-import { PrismaClient } from "../app/generated/prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 // Carrega as variáveis de ambiente do arquivo .env
 config();
