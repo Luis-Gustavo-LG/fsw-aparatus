@@ -1,36 +1,33 @@
-import { prisma } from "@/lib/prisma"
-import { revalidatePath } from "next/cache"
-import { NextResponse } from "next/server"
-import Stripe from "stripe"
+import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
+import Stripe from "stripe";
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
 
 export const POST = async (request: Request) => {
-  if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_WEBHOOK_SECRET) {
-    return NextResponse.error();
-  }
-
   const signature = request.headers.get("stripe-signature");
-  if (!signature) return NextResponse.error();
+  if (!signature) return new Response("Missing signature", { status: 400 });
 
-  const body = Buffer.from(await request.arrayBuffer());
+  const body = await request.text();
 
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: "2025-10-29.clover",
-  });
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
   let event;
   try {
     event = stripe.webhooks.constructEvent(
       body,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET
+      process.env.STRIPE_WEBHOOK_SECRET!
     );
   } catch (err) {
-    return NextResponse.error();
+    return new Response("Invalid signature", { status: 400 });
   }
 
-  // ============================================================
-  //   CHECKOUT SESSION COMPLETED — serve para novo booking ou re-agendamento
-  // ============================================================
+  // CHECKOUT SESSION COMPLETED
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
 
@@ -50,8 +47,8 @@ export const POST = async (request: Request) => {
           paymentIntentId,
         },
       });
-
     } else {
+
       const { date, serviceId, barberShopId, userId } = metadata ?? {};
 
       await prisma.booking.create({
@@ -66,10 +63,8 @@ export const POST = async (request: Request) => {
     }
   }
 
-  // ============================================================
-  //   CANCELAMENTO — sempre via refund
-  // ============================================================
-  if (event.type === "charge.refunded" || event.type === "charge.refund.updated") {
+  // CANCELAMENTO
+  if (event.type === "charge.refunded") {
     const charge = event.data.object;
 
     const paymentIntentId =
@@ -87,9 +82,6 @@ export const POST = async (request: Request) => {
       });
     }
   }
-
-  revalidatePath("/bookings");
-  revalidatePath("/");
 
   return NextResponse.json({ received: true });
 };

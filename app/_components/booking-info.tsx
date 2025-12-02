@@ -51,7 +51,7 @@ const BookingInfo = ({ children, bookingId }: BookingProps) => {
     <Sheet>
       {children}
 
-      <SheetContent side="right" className="w-[450px]">
+      <SheetContent side="right" className="w-[350px]">
         <SheetHeader>
           <SheetTitle>Informações da Reserva</SheetTitle>
           <SheetDescription>Detalhes do agendamento</SheetDescription>
