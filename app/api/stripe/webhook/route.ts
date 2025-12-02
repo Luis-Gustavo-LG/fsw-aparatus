@@ -1,33 +1,36 @@
-import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
-import Stripe from "stripe";
-
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
-export const preferredRegion = "home";
+import { prisma } from "@/lib/prisma"
+import { revalidatePath } from "next/cache"
+import { NextResponse } from "next/server"
+import Stripe from "stripe"
 
 export const POST = async (request: Request) => {
+  if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_WEBHOOK_SECRET) {
+    return NextResponse.error();
+  }
+
   const signature = request.headers.get("stripe-signature");
-  if (!signature) return new Response("Missing signature", { status: 400 });
+  if (!signature) return NextResponse.error();
 
-  const body = await request.text();
+  const body = Buffer.from(await request.arrayBuffer());
 
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
   let event;
   try {
     event = stripe.webhooks.constructEvent(
       body,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET!
+      process.env.STRIPE_WEBHOOK_SECRET
     );
   } catch (err) {
-    return new Response("Invalid signature", { status: 400 });
+    return NextResponse.error();
   }
 
-  // ===== CHECKOUT SESSION COMPLETED =====
+  // ============================================================
+  //   CHECKOUT SESSION COMPLETED — serve para novo booking ou re-agendamento
+  // ============================================================
   if (event.type === "checkout.session.completed") {
-    const session: any = event.data.object;
+    const session = event.data.object;
 
     const paymentIntentId =
       typeof session.payment_intent === "string"
@@ -45,6 +48,7 @@ export const POST = async (request: Request) => {
           paymentIntentId,
         },
       });
+
     } else {
       const { date, serviceId, barberShopId, userId } = metadata ?? {};
 
@@ -60,9 +64,11 @@ export const POST = async (request: Request) => {
     }
   }
 
-  // ===== CANCELAMENTO (REFUND) =====
-  if (event.type === "charge.refunded") {
-    const charge: any = event.data.object;
+  // ============================================================
+  //   CANCELAMENTO — sempre via refund
+  // ============================================================
+  if (event.type === "charge.refunded" || event.type === "charge.refund.updated") {
+    const charge = event.data.object;
 
     const paymentIntentId =
       typeof charge.payment_intent === "string"
