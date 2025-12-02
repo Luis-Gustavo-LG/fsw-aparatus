@@ -2,11 +2,9 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+export const preferredRegion = "home";
 
 export const POST = async (request: Request) => {
   const signature = request.headers.get("stripe-signature");
@@ -27,9 +25,9 @@ export const POST = async (request: Request) => {
     return new Response("Invalid signature", { status: 400 });
   }
 
-  // CHECKOUT SESSION COMPLETED
+  // ===== CHECKOUT SESSION COMPLETED =====
   if (event.type === "checkout.session.completed") {
-    const session = event.data.object;
+    const session: any = event.data.object;
 
     const paymentIntentId =
       typeof session.payment_intent === "string"
@@ -48,7 +46,6 @@ export const POST = async (request: Request) => {
         },
       });
     } else {
-
       const { date, serviceId, barberShopId, userId } = metadata ?? {};
 
       await prisma.booking.create({
@@ -63,9 +60,9 @@ export const POST = async (request: Request) => {
     }
   }
 
-  // CANCELAMENTO
+  // ===== CANCELAMENTO (REFUND) =====
   if (event.type === "charge.refunded") {
-    const charge = event.data.object;
+    const charge: any = event.data.object;
 
     const paymentIntentId =
       typeof charge.payment_intent === "string"
