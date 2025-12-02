@@ -1,7 +1,6 @@
-import { prisma } from "@/lib/prisma"
-import { revalidatePath } from "next/cache"
-import { NextResponse } from "next/server"
-import Stripe from "stripe"
+import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
+import Stripe from "stripe";
 
 export const POST = async (request: Request) => {
   if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_WEBHOOK_SECRET) {
@@ -12,7 +11,6 @@ export const POST = async (request: Request) => {
   if (!signature) return NextResponse.error();
 
   const body = Buffer.from(await request.arrayBuffer());
-
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
   let event;
@@ -26,8 +24,17 @@ export const POST = async (request: Request) => {
     return NextResponse.error();
   }
 
+  // ======== IGNORAR EVENTOS QUE NÃO IMPORTAM ========
+  if (
+    event.type !== "checkout.session.completed" &&
+    event.type !== "charge.refunded" &&
+    event.type !== "charge.refund.updated"
+  ) {
+    return NextResponse.json({ ignored: true });
+  }
+
   // ============================================================
-  //   CHECKOUT SESSION COMPLETED — serve para novo booking ou re-agendamento
+  //   CHECKOUT SESSION COMPLETED
   // ============================================================
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
@@ -48,7 +55,6 @@ export const POST = async (request: Request) => {
           paymentIntentId,
         },
       });
-
     } else {
       const { date, serviceId, barberShopId, userId } = metadata ?? {};
 
@@ -65,7 +71,7 @@ export const POST = async (request: Request) => {
   }
 
   // ============================================================
-  //   CANCELAMENTO — sempre via refund
+  //   CANCELAMENTO — REFUND
   // ============================================================
   if (event.type === "charge.refunded" || event.type === "charge.refund.updated") {
     const charge = event.data.object;
