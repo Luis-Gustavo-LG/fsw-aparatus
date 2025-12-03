@@ -51,21 +51,22 @@ const BookingInfo = ({ children, bookingId }: BookingProps) => {
     <Sheet>
       {children}
 
-      <SheetContent side="right" className="w-[350px]">
+      <SheetContent side="right" className="w-full sm:w-[350px] overflow-y-auto max-h-screen">
         <SheetHeader>
           <SheetTitle>Informações da Reserva</SheetTitle>
           <SheetDescription>Detalhes do agendamento</SheetDescription>
         </SheetHeader>
 
         <div className="flex flex-1 flex-col p-5 space-y-5">
-          <div className="relative rounded-xl min-w-[400px] min-h-[200px]">
+          <div className="relative rounded-xl w-full h-[200px]">
             <Image
               fill
               src="/map.png"
               alt="Mapa"
               className="rounded-xl object-cover"
             />
-            <div className="absolute flex items-center gap-2 font-semibold z-20 p-3 rounded-xl bg-card bottom-5 left-[10%]">
+
+            <div className="absolute flex items-center gap-2 font-semibold z-20 p-3 rounded-xl bg-card bottom-5 left-1/2 -translate-x-1/2">
               <div className="relative rounded-[20px] shrink-0 size-[40px] overflow-hidden">
                 <Image
                   alt={booking.barbershop.name}
@@ -74,6 +75,7 @@ const BookingInfo = ({ children, bookingId }: BookingProps) => {
                   className="rounded-[10px] object-cover"
                 />
               </div>
+
               {booking.barbershop.name}
             </div>
           </div>

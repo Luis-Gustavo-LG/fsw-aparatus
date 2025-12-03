@@ -1,5 +1,5 @@
-export const runtime = "nodejs";
 import { prisma } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 
@@ -25,7 +25,6 @@ export const POST = async (request: Request) => {
     return NextResponse.error();
   }
 
-  // ======== IGNORAR EVENTOS QUE NÃO IMPORTAM ========
   if (
     event.type !== "checkout.session.completed" &&
     event.type !== "charge.refunded" &&
@@ -34,9 +33,6 @@ export const POST = async (request: Request) => {
     return NextResponse.json({ ignored: true });
   }
 
-  // ============================================================
-  //   CHECKOUT SESSION COMPLETED
-  // ============================================================
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
 
@@ -71,9 +67,6 @@ export const POST = async (request: Request) => {
     }
   }
 
-  // ============================================================
-  //   CANCELAMENTO — REFUND
-  // ============================================================
   if (event.type === "charge.refunded" || event.type === "charge.refund.updated") {
     const charge = event.data.object;
 
@@ -92,6 +85,9 @@ export const POST = async (request: Request) => {
       });
     }
   }
+
+  revalidatePath("/bookings")
+  revalidatePath("/")
 
   return NextResponse.json({ received: true });
 };
