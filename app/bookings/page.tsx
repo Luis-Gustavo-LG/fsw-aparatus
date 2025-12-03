@@ -62,7 +62,7 @@ const Bookings = async () => {
           </p>
         </div>
       ) : (
-        <div className="flex flex-1 flex-col px-5 space-y-7">
+        <div className="flex flex-1 flex-col px-5 mb-5 space-y-7">
           <p className="font-semibold text-2xl">Agendamentos</p>
 
           {/* Confirmados */}
